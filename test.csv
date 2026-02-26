@@ -1,0 +1,6 @@
+campaign_id,campaign_name,ad_group,ad_title,clicks,impressions,spend,cost_per_click,conversion_rate
+101,Campaign_A,Ad_Group_1,"Summer Sale - 50% Off",1200,15000,480.00,0.40,2.5
+102,Campaign_A,Ad_Group_1,"Limited Time Offer",950,12000,380.00,0.40,3.2
+103,Campaign_B,Ad_Group_2,"New Arrivals",780,9500,312.00,0.40,1.8
+104,Campaign_B,Ad_Group_2,"Back to School",650,8200,260.00,0.40,2.1
+105,Campaign_C,Ad_Group_3,"Free Shipping",456,6789,182.40,0.40,3.8
