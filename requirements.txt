@@ -2,3 +2,11 @@ fastapi
 uvicorn
 openai
 python-dotenv
+numpy
+pandas
+reportlab
+fastapi
+openai
+python-dotenv
+python-multipart
+uvicorn

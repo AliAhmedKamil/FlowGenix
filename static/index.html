@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlowGenix - AI Market Report</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 32px;
+        }
+
+        .upload-box {
+            border: 2px dashed #333;
+            border-radius: 12px;
+            padding: 48px 24px;
+            text-align: center;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .upload-box:hover {
+            border-color: #555;
+        }
+
+        .upload-box.has-file {
+            border-color: #22c55e;
+            background: rgba(34, 197, 94, 0.05);
+        }
+
+        .upload-box input {
+            display: none;
+        }
+
+        .upload-icon {
+            width: 48px;
+            height: 48px;
+ margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .file-name {
+            color: #22c55e;
+            font-weight: 500;
+            margin-top: 12px;
+        }
+
+        button {
+            width: 100%;
+            padding: 16px 24px;
+            margin-top: 16px;
+            border: none;
+            border-radius: 8px;
+            background: #fff;
+            color: #0a0a0a;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        button:hover:not(:disabled) {
+            opacity: 0.9;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .status {
+            margin-top: 16px;
+            padding: 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .status.loading {
+            display: block;
+            background: #1a1a1a;
+            color: #888;
+        }
+
+        .status.error {
+            display: block;
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+        }
+
+        .status.success {
+            display: block;
+            background: rgba(34, 197, 94, 0.1);
+            color: #22c55e;
+        }
+
+        .download-link {
+            display: inline-block;
+            margin-top: 12px;
+            color: #22c55e;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .download-link:hover {
+            text-decoration: underline;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #333;
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>FlowGenix - AI Marketing Report</h1>
+        <p class="subtitle">Upload your ad data CSV. Get a client-ready report in 60 seconds.</p>
+
+        <div class="upload-box" id="dropZone">
+            <input type="file" id="fileInput" accept=".csv">
+            <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M12 16.5V9.75m0 0l-3 3m3-3l3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z"/>
+            </svg>
+            <p>Drop CSV file or click to browse</p>
+            <p class="file-name" id="fileName"></p>
+        </div>
+
+        <button id="generateBtn" disabled>Generate Report</button>
+
+        <div class="status" id="status"></div>
+
+        <a href="aboutus.html" class="aboutus">About Us</a>
+        <style>
+            .aboutus{
+                position: absolute;
+                top: 0;
+                right: 0;
+                padding: 10px;
+                color: #fff;
+                text-decoration: none;
+                font-size: 14px;
+                font-weight: 500;
+            }
+            .aboutus:hover{
+                text-decoration: underline;
+            }
+        </style>
+    </div>
+
+    <script>
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const fileName = document.getElementById('fileName');
+        const generateBtn = document.getElementById('generateBtn');
+        const status = document.getElementById('status');
+
+        let selectedFile = null;
+
+        // File selection
+        dropZone.addEventListener('click', () => fileInput.click());
+        
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.style.borderColor = '#555';
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.style.borderColor = '#333';
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.style.borderColor = '#333';
+            const files = e.dataTransfer.files;
+            if (files.length) handleFile(files[0]);
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length) handleFile(e.target.files[0]);
+        });
+
+        function handleFile(file) {
+            if (!file.name.endsWith('.csv')) {
+                showStatus('error', 'Please upload a CSV file');
+                return;
+            }
+            selectedFile = file;
+            fileName.textContent = file.name;
+            dropZone.classList.add('has-file');
+            generateBtn.disabled = false;
+        }
+
+        // Generate report
+        generateBtn.addEventListener('click', async () => {
+            if (!selectedFile) return;
+
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+
+            showStatus('loading', 'Generating your report...');
+            generateBtn.disabled = true;
+
+            try {
+                const response = await fetch('/api/generate-report', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const err = await response.json().catch(() => ({}));
+                    throw new Error(err.detail || 'Generation failed');
+                }
+
+                const data = await response.json();
+
+                const recsHtml = data.recommendations
+                    .map(r => `<li>${r}</li>`)
+                    .join('');
+
+                showStatus('success', `
+                    <strong>Report Generated!</strong><br><br>
+                    <strong>Summary:</strong><br>${data.summary}<br><br>
+                    <strong>Recommendations:</strong>
+                    <ul style="margin-top:8px;padding-left:20px;text-align:left">${recsHtml}</ul>
+                `);
+
+            } catch (err) {
+                showStatus('error', `Failed to generate report: ${err.message}`);
+                generateBtn.disabled = false;
+            }
+        });
+
+        function showStatus(type, message) {
+            status.className = 'status ' + type;
+            if (type === 'loading') {
+                status.innerHTML = `<span class="spinner"></span>${message}`;
+            } else {
+                status.innerHTML = message;
+            }
+        }
+    </script>
+</body>
+</html>
