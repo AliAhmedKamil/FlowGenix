@@ -9,7 +9,7 @@ class AIEngine:
     Enforces strict adherence to data and professional tone.
     """
 
-    def __init__(self, api_key="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"):
+    def __init__(self, api_key="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"):
         # Logic: If api_key is provided (default is the key above), use it. 
         # Otherwise, fall back to the environment variable.
         self.client = OpenAI(api_key=api_key or os.getenv("OPENAI_API_KEY"))
@@ -101,3 +101,4 @@ def get_ai_analysis(metrics: dict) -> dict:
     # unless we want to override it.
     engine = AIEngine()
     return engine.generate_analysis(metrics)
+
