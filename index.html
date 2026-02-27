@@ -242,7 +242,7 @@
             generateBtn.disabled = true;
 
             try {
-                const response = await fetch('/generate-report', {
+                const response = await fetch('https://flowgenix.up.railway.app/generate-report', {
                     method: 'POST',
                     body: formData
                 });
